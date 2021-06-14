@@ -1,0 +1,39 @@
+{
+    "name": "open-time-log",
+    "version": "0.0.1",
+    "description": "OpenTimelog NW (node-webkit) application",
+    "main": "main.js",
+    "scripts": {
+        "start": "nw ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/surinder83singh/open-time-log.git"
+    },
+    "keywords": [
+        "node-webkit",
+        "NW",
+        "OpenTimelog",
+        "Open",
+        "timelog"
+    ],
+    "author": {
+        "name": "Surinder Singh",
+        "email": "surinder83singh@gmail.com"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/surinder83singh/open-time-log/issues"
+    },
+    "homepage": "https://github.com/surinder83singh/open-time-log#readme",
+    "devDependencies": {},
+    "dependencies": {
+        "@matoo/uiohook": "https://github.com/surinder83singh/uiohook",
+        "csvtojson": "*",
+        "moment": "*"
+    },
+    "files":[
+        "main.js",
+        "main.html"
+    ]
+}

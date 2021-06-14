@@ -1,0 +1,34 @@
+"use strict";
+const DEFAULT_BRANCH = 'master';
+
+const E = new Emanator(__dirname, {
+    type : 'NODE+NWJS',
+    guid : '5740552f-c712-4720-9ccc-7c68ca49e603',
+    group : 'matoo',
+    ident : 'open-time-log',
+    suffix : '',
+    title : 'OpenTimeLog',
+    banner : 'OPEN-TIME-LOG',
+    git : 'git@github.com:surinder83singh/open-time-log',
+    author : "Surinder Singh.",
+    url : "https://github.com/surinder83singh",
+    //archive : true,
+    folder : true,
+    standalone : true,
+    production: true,
+    //DMG: true,
+    nwjs : { version : '0.52.2' },
+    resources : 'resources/setup',
+
+    manifest : (manifest) => {
+        return manifest;
+    }
+})
+
+
+const deps = [];
+E.task('done', deps, async () => {
+})
+
+
+E.run();
