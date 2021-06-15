@@ -1,33 +1,101 @@
 "use strict";
 const DEFAULT_BRANCH = 'master';
+const DISABLE_NWJC = true;
+
+console.log(`Current uid: ${process.getuid()}, ${process.getgid()}`);
 
 const E = new Emanator(__dirname, {
-    type : 'NODE+NWJS',
-    guid : '5740552f-c712-4720-9ccc-7c68ca49e603',
-    group : 'matoo',
-    ident : 'open-time-log',
-    suffix : '',
-    title : 'OpenTimeLog',
-    banner : 'OPEN-TIME-LOG',
-    git : 'git@github.com:surinder83singh/open-time-log',
-    author : "Surinder Singh.",
-    url : "https://github.com/surinder83singh",
-    //archive : true,
-    folder : true,
-    standalone : true,
-    production: true,
-    //DMG: true,
-    nwjs : { version : '0.52.2' },
-    resources : 'resources/setup',
+	type: 'NODE+NWJS',
+	guid: '5740552f-c712-4720-9ccc-7c68ca49e603',
+	group: 'matoo',
+	ident: 'OpenTimeLog',
+	suffix: '',
+	title: 'OpenTimeLog',
+	banner: 'OPEN TIME LOG',
+	git: 'git@github.com:surinder83singh/open-time-log',
+	author: "Surinder Singh",
+	url: "https://github.com/surinder83singh",
+	//archive : true,
+	folder: true,
+	standalone: true,
+	production: true,
+	//DMG: true,
+	nwjs: { version: '0.53.1' },
+	resources: 'resources/setup',
+	manifest: (manifest) => {
+		return manifest;
+	}
+});
+E.task('::main.html', ['origin'], (callback) => {
+	return E.copy(path.join(E.REPO, 'main.html'), path.join(E.PACKAGE, 'main.html'))
+});
 
-    manifest : (manifest) => {
-        return manifest;
-    }
+E.task('::main.js', ['origin'], (callback) => {
+	return E.copy(path.join(E.REPO, 'main.js'), path.join(E.PACKAGE, 'main.js'));
+});
+
+E.task('::resources', ['origin'], (callback) => {
+	return E.copy(path.join(E.REPO, 'resources/'), path.join(E.PACKAGE, 'resources/'));
+});
+E.task('::lib', ['origin'], (callback) => {
+	return E.copy(path.join(E.REPO, 'lib/'), path.join(E.PACKAGE, 'lib/'));
+});
+
+
+E.task('::README', ['origin'], (callback) => {
+	//console.log("README::".redBG)
+	E.copy(path.join(E.REPO, 'README.md'), path.join(E.PACKAGE, 'README.md'))
+		.then((code) => {
+			if (!code)
+				return callback();
+			console.error("README:code", code)
+		}, (err) => {
+			console.error("README:err", err)
+		}).catch(e => {
+			console.error("README:error", e)
+		})
 })
 
+E.task('::BUILD', ['origin'], (callback) => {
+	if(E.options.nonpm || E.flags.nonpm || E.flags['dry-run'])
+		return callback();
+	return new Promise((resolve, reject) => {
+		let cwd = path.join(E.BUILD, 'node_modules', '@matoo/uiohook')
+		let cmd = path.join(E.BUILD, 'node_modules', '@matoo/uiohook', 'install')
+		if (!fs.existsSync(cmd))
+			reject(`missing uiohook - wtf? ${cmd}`);
 
-const deps = [];
+		E.spawn(cmd, ['--nw='+E.options.nwjs.version], { cwd, stdio: 'inherit' })
+			.then((code) => {
+				if (!code)
+					return resolve();
+				reject(code);
+				//console.error("@BUILD:code", code)
+			}, (err) => {
+				console.error("@BUILD:err", err)
+				reject(err);
+			}).catch(e => {
+				console.error("@BUILD:error", e)
+				reject(e);
+			})
+	})
+})
+
+E.npm_update11 = async () => {
+	if (E.options.nonpm || E.flags.nonpm || E.flags['dry-run'])
+		return;
+
+	return E.utils.spawn(E.NPM, ['update'], {
+		cwd: E.PACKAGE,
+		stdio: 'inherit',
+		uid: process.getuid(),
+		gid: process.getgid()
+	});
+}
+
+const deps = ['::BUILD', '::resources', '::lib', '::README', '::main.js', '::main.html'];
 E.task('done', deps, async () => {
+	//
 })
 
 
