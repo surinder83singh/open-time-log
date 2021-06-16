@@ -67,174 +67,51 @@ class LogView extends BaseElement{
 				border:1px solid #DDD;border-radius:5px;
 				margin:5px;box-sizing:border-box;
 				width:200px;
-				--bg-color:#ccc;
+				box-shadow:0 2px 2px 0 rgb(0 0 0 / 14%),
+				0 3px 1px -2px rgb(0 0 0 / 20%),
+				0 1px 5px 0 rgb(0 0 0 / 12%);
 			}
 			.item.msg{
-				min-width: 95%;border-radius: 0px;
-				border: 1px solid var(--flow-primary-color);
+				min-width: 95%;
+				/*border-radius: 0px;*/
+				border:0px solid var(--flow-primary-color);
 				padding:4px 10px;
 				margin:5px;
 				display:block;
 				flex:1;position:sticky;top:0px;
 				background:var(--flow-background-color);
+				border-top-left-radius:0px;
+				border-top-right-radius:0px;
 			}
 			.item .img{
 				background:center no-repeat;
 				background-size:contain;
 				height:150px;background-color:#EFEFEF;
 			}
-			.item .m,
-			.item .k{height:15px;border-bottom:1px solid #DDD}
 			.item-head{display:flex;align-items:center}
-			.item-time{flex:1;text-align:center}
-			.activity-bars{width:100px}
+			.item-time{flex:1;text-align:center;padding:5px 0px}
+			.activity-bars{
+				margin:0px 5px;
+				--bg-color:var(--flow-background-color);
+				width:100px;background-color: var(--bg-color);
+			}
 			.activity-bar{
-				width:10%;
+				width:0%;height:6px;border-bottom:1px solid var(--bg-color);
 				background-image: linear-gradient(90deg,
 					var(--bg-color) 2px, transparent 2px, transparent 100%);
-				/*background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 100%);*/
 				background-size: 10px 1rem;
-				background-color: #007bff;
+				background-color: var(--flow-primary-color);
 			}
-			.activity-bar[v="2"]{
-				width:20%;
-				/*background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 100%);*/
-			}
-			.activity-bar[v="3"]{
-				width:20%;
-				/*background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 100%);*/
-			}
-			.activity-bar[v="4"]{
-				width:40%;
-				/*background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 100%);*/
-			}
-			.activity-bar[v="5"]{
-				background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 41%,
-					transparent 41%, transparent 50%,
-					var(--bg-color) 50%, var(--bg-color) 100%);
-			}
-			.activity-bar[v="6"]{
-				background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 41%,
-					transparent 41%, transparent 50%,
-					var(--bg-color) 50%, var(--bg-color) 51%,
-					transparent 51%, transparent 60%,
-					var(--bg-color) 60%, var(--bg-color) 100%);
-			}
-			.activity-bar[v="7"]{
-				background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 41%,
-					transparent 41%, transparent 50%,
-					var(--bg-color) 50%, var(--bg-color) 51%,
-					transparent 51%, transparent 60%,
-					var(--bg-color) 60%, var(--bg-color) 61%,
-					transparent 61%, transparent 70%,
-					var(--bg-color) 70%, var(--bg-color) 100%);
-			}
-			.activity-bar[v="8"]{
-				background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 41%,
-					transparent 41%, transparent 50%,
-					var(--bg-color) 50%, var(--bg-color) 51%,
-					transparent 51%, transparent 60%,
-					var(--bg-color) 60%, var(--bg-color) 61%,
-					transparent 61%, transparent 70%,
-					var(--bg-color) 70%, var(--bg-color) 71%,
-					transparent 71%, transparent 80%,
-					var(--bg-color) 80%, var(--bg-color) 100%);
-			}
-			.activity-bar[v="9"]{
-				background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 41%,
-					transparent 41%, transparent 50%,
-					var(--bg-color) 50%, var(--bg-color) 51%,
-					transparent 51%, transparent 60%,
-					var(--bg-color) 60%, var(--bg-color) 61%,
-					transparent 61%, transparent 70%,
-					var(--bg-color) 70%, var(--bg-color) 71%,
-					transparent 71%, transparent 80%,
-					var(--bg-color) 80%, var(--bg-color) 81%,
-					transparent 81%, transparent 90%,
-					var(--bg-color) 90%, var(--bg-color) 100%);
-			}
-			.activity-bar[v="10"]{
-				background-image: linear-gradient(90deg,
-					transparent 0%,	transparent 10%,
-					var(--bg-color) 10%, var(--bg-color) 11%,
-					transparent 11%, transparent 20%,
-					var(--bg-color) 20%, var(--bg-color) 21%,
-					transparent 21%, transparent 30%,
-					var(--bg-color) 30%, var(--bg-color) 31%,
-					transparent 31%, transparent 40%,
-					var(--bg-color) 40%, var(--bg-color) 41%,
-					transparent 41%, transparent 50%,
-					var(--bg-color) 50%, var(--bg-color) 51%,
-					transparent 51%, transparent 60%,
-					var(--bg-color) 60%, var(--bg-color) 61%,
-					transparent 61%, transparent 70%,
-					var(--bg-color) 70%, var(--bg-color) 71%,
-					transparent 71%, transparent 80%,
-					var(--bg-color) 80%, var(--bg-color) 81%,
-					transparent 81%, transparent 90%,
-					var(--bg-color) 90%, var(--bg-color) 91%,
-					transparent 91%, transparent 100%);
-			}
+			.activity-bar[v="1"]{width:10%}
+			.activity-bar[v="2"]{width:20%}
+			.activity-bar[v="3"]{width:30%}
+			.activity-bar[v="4"]{width:40%}
+			.activity-bar[v="5"]{width:50%}
+			.activity-bar[v="6"]{width:60%}
+			.activity-bar[v="7"]{width:70%}
+			.activity-bar[v="8"]{width:80%}
+			.activity-bar[v="9"]{width:90%}
+			.activity-bar[v="10"]{width:100%}
 		`
 	}
 	render(){
@@ -287,7 +164,7 @@ class LogView extends BaseElement{
 			}
 			item.m = getRandomInt(1, 10);
 			item.k = getRandomInt(1, 10);
-			item.time = m.format("h:hh a")
+			item.time = m.format("h:mm a")
 
 			info.list.push(item)
 		});
