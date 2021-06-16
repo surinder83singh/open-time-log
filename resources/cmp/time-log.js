@@ -4,6 +4,7 @@ const os = require("os");
 const path = require("path");
 const utils = require("@aspectron/flow-utils");
 const crypto = require("crypto");
+const screenshot = require('screenshot-desktop')
 const HOME = path.join(os.homedir(), '.open-time-log');
 if(!fs.existsSync(HOME))
 	fs.mkdirSync(HOME);
@@ -11,8 +12,24 @@ const ROOT = process.cwd();//path.join(__dirname, "../../")
 console.log("HOME", HOME)
 console.log("ROOT", ROOT)
 const RESET_CONFIG = false;
+const LOG_INTERVAL = 60 //in seconds;
 
-import {html, css, BaseElement, FlowDialog} from "../../node_modules/@aspectron/flow-ux/flow-ux.js";
+const throttle = (callback, limit)=>{
+    var wait = false;                  // Initially, we're not waiting
+    return function (...args) {        // We return a throttled function
+        if (!wait) {                   // If we're not waiting
+            callback(...args);         // Execute users function
+            wait = true;               // Prevent future invocations
+            setTimeout(function () {   // After a period of time
+                wait = false;          // And allow future invocations
+            }, limit);
+        }
+    }
+}
+
+import {
+	html, css, BaseElement, FlowDialog, getRandomInt
+} from "../../node_modules/@aspectron/flow-ux/flow-ux.js";
 
 
 class TimeLog extends BaseElement{
@@ -40,7 +57,7 @@ class TimeLog extends BaseElement{
 				display:none;
 			}
 			:host([debug]) .log-input{
-				diplay:block;
+				display:block;
 			}
 			.btns{width:100%;max-width:200px;}
 			.btn.block:not([hidden]){display: block;}
@@ -75,7 +92,7 @@ class TimeLog extends BaseElement{
 				html`<flow-btn class="btn block start-btn primary" @click="${this.onStartClick}">Start</flow-btn>`
 			}
 		</div>
-		<textarea class="log-input"></textarea>
+		<textarea class="log-input" readonly></textarea>
 		`
 	}
 
@@ -116,16 +133,64 @@ class TimeLog extends BaseElement{
 
 	constructor(){
 		super();
+		this._logs = [];
+		this.debug = localStorage.debugLog ==1;
+		this.updateUserActivityThrottled = throttle(this.updateUserActivity.bind(this), 500);
 		uiohook.on("mouse-event", (evt)=>{
+			if(evt.type != "mouseclick")
+				return
 			this.logEvent("mouse-event", evt)
+			this.updateUserActivityThrottled(evt, true);
 		})
 		
 		uiohook.on("keyboard-event", (evt)=>{
-			this.logEvent("mouse-event", evt)
+			if(evt.type != "keyup")
+				return
+			this.logEvent("keyboard-event", evt)
+			this.updateUserActivityThrottled(evt);
 		})
 		this.team = "default";
 		this.activity = "default";
 		this.createDefaultConfig();
+	}
+	updateUserActivity(evt, isMouse=false){
+		console.log("evt.type", evt.type, isMouse)
+		if(!this.data)
+			return
+		if(isMouse)
+			this.data.m++;
+		else
+			this.data.k++;
+	}
+	captureScreenshot(){
+		/*
+		screenshot.listDisplays()
+		.then((displays) => {
+			console.log('displays:', displays)
+			for (let index = 0; index < displays.length; index++) {
+				const display = displays[index]
+				const imgpath = path.join(IMG_PATH, Date.now() + '_' + index + '.png')
+				screenshot({ screen: display.id, filename: imgpath }).then((imgpath) => {
+					console.log(imgpath)
+				}).catch(err => {
+					console.error(err)
+				})
+			}
+		})
+		*/
+		return new Promise((resolve)=>{
+			screenshot().then((img) => {
+				// img: Buffer filled with jpg goodness
+				this.log("img", img)
+				const {activity} = this;
+				const ts = Date.now();
+				const uid = activity+'_'+ts;
+				fs.writeFileSync(path.join(HOME, this.team, 'img', uid+'.jpg'), img)
+				resolve({activity, ts});
+			}).catch((err) => {
+				this.log("screenshot:error", err)
+			})
+		})
 	}
 	getConfigPath(){
 		return path.join(HOME, 'config.json');
@@ -148,6 +213,16 @@ class TimeLog extends BaseElement{
 			this.team = selectedTeam;
 			this.activity = selectedActivity;
 		}
+		this.ensureDirs();
+	}
+	ensureDirs(){
+		[
+			path.join(HOME, this.team),
+			path.join(HOME, this.team, 'img')
+		].forEach(p=>{
+			if(!fs.existsSync(p))
+				fs.mkdirSync(p)
+		})
 	}
 	saveConfig(config=false){
 		const filePath = this.getConfigPath();
@@ -162,10 +237,9 @@ class TimeLog extends BaseElement{
 	logEvent(name, evt){
 		if(!this.logInput)
 			return
-		this.logInput.innerHTML = this.logInput.innerHTML
-		.split("\n")
-		.slice(-9)
-		.join("\n")+name+": "+JSON.stringify(evt)+"\n";
+		this._logs.push(name+": "+JSON.stringify(evt))
+		this._logs.splice(0, this._logs.length - 10);
+		this.logInput.innerHTML = this._logs.join("\n");
 	}
 
 	setTeam(team){
@@ -174,6 +248,7 @@ class TimeLog extends BaseElement{
 		this.team = team;
 		this.config.selectedTeam = team;
 		this.setActivity("default");
+		this.ensureDirs();
 	}
 
 	setActivity(activity){
@@ -205,6 +280,7 @@ class TimeLog extends BaseElement{
 		this.saveConfig();
 		//this.requestUpdate("config")
 		this.team = uid;
+		this.ensureDirs();
 	}
 	createActivity(name){
 		name = name.trim().toLowerCase();
@@ -308,15 +384,76 @@ class TimeLog extends BaseElement{
 	}
 
 	onStartClick(){
+		this.start()
+	}
+	start(){
+		this.ensureDirs();
 		this.log("uiohook:starting.....", this.msgInput.value)
+		this.data = {
+			k:0,//keyboard count
+			m:0, //mouse hit count
+			g:this.msgInput.value
+		}
 		uiohook.start(true);
 		this.started = true;
+		setTimeout(()=>{
+			this.pushLog();
+			this.startTick();
+		}, 2000)
 	}
-
 	onStopClick(){
+		this.stop()
+	}
+	stop(){
 		this.log("uiohook:stoping....." )
 		uiohook.stop(true);
 		this.started = false;
+		this.clearQueue();
+		this.stopTick();
+	}
+
+	startTick(){
+		this.stopTick();
+		this._tickingId = setInterval(()=>{
+			this.queuePush();
+		}, LOG_INTERVAL * 1000)
+	}
+
+	stopTick(){
+		if(this._tickingId){
+			clearInterval(this._tickingId)
+			this._tickingId = null;
+		}
+	}
+
+	pushLog(){
+		if(!this.started)
+			return
+		this.clearQueue();
+		this.captureScreenshot().then(({activity, ts})=>{
+			let data = {... (this.data||{k:0,m:0})};
+			this.data = {k:0,m:0}
+			data.t = ts;
+			this._pushLog(activity, data);
+		});
+	}
+	_pushLog(activity, data){
+		let file = path.join(HOME, this.team, activity+'-logs.json');
+		console.log("_pushLog:file", file)
+		fs.appendFileSync(file, JSON.stringify(data)+",\n");
+	}
+	queuePush(){
+		let delay = getRandomInt(5000, (LOG_INTERVAL - 5) * 1000)
+		console.log('delay', delay)
+		this._queueId = setTimeout(()=>{
+			this.pushLog();
+		}, delay)
+	}
+	clearQueue(){
+		if(this._queueId){
+			clearTimeout(this._queueId)
+			this._queueId = null;
+		}
 	}
 }
 

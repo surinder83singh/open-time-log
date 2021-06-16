@@ -26,12 +26,12 @@ const E = new Emanator(__dirname, {
 		return manifest;
 	}
 });
-E.task('::main.html', ['origin'], (callback) => {
-	return E.copy(path.join(E.REPO, 'main.html'), path.join(E.PACKAGE, 'main.html'))
+E.task('::app.html', ['origin'], (callback) => {
+	return E.copy(path.join(E.REPO, 'app.html'), path.join(E.PACKAGE, 'app.html'))
 });
 
-E.task('::main.js', ['origin'], (callback) => {
-	return E.copy(path.join(E.REPO, 'main.js'), path.join(E.PACKAGE, 'main.js'));
+E.task('::app.js', ['origin'], (callback) => {
+	return E.copy(path.join(E.REPO, 'app.js'), path.join(E.PACKAGE, 'app.js'));
 });
 
 E.task('::resources', ['origin'], (callback) => {
@@ -93,7 +93,7 @@ E.npm_update11 = async () => {
 	});
 }
 
-const deps = ['::BUILD', '::resources', '::lib', '::README', '::main.js', '::main.html'];
+const deps = ['::BUILD', '::resources', '::lib', '::README', '::app.js', '::app.html'];
 E.task('done', deps, async () => {
 	//
 })

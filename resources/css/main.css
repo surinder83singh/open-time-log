@@ -7,6 +7,7 @@ body{
     width: 100vw;
     font-family:'Open Sans', sans-serif;
     --flow-font-family:'Open Sans', sans-serif;
+    overflow-y: auto;
 }
 
 .heading{font-size:1.5rem;text-align:center;}

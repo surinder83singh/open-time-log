@@ -2,7 +2,7 @@
     "name": "open-time-log",
     "version": "0.0.1",
     "description": "OpenTimelog NW (node-webkit) application",
-    "main": "main.js",
+    "main": "app.js",
     "scripts": {
         "start": "nw ."
     },
@@ -28,14 +28,15 @@
     "homepage": "https://github.com/surinder83singh/open-time-log#readme",
     "devDependencies": {},
     "dependencies": {
-        "@matoo/uiohook": "https://github.com/surinder83singh/uiohook",
         "@aspectron/flow-ux": "*",
+        "@matoo/uiohook": "https://github.com/surinder83singh/uiohook",
         "csvtojson": "*",
-        "moment": "*"
+        "moment": "*",
+        "screenshot-desktop": "*"
     },
     "files": [
-        "main.js",
-        "main.html",
+        "app.js",
+        "app.html",
         "lib",
         "resources"
     ]
