@@ -30,8 +30,6 @@ const throttle = (callback, limit)=>{
 import {
 	html, css, BaseElement, FlowDialog, getRandomInt
 } from "../../node_modules/@aspectron/flow-ux/flow-ux.js";
-
-
 class TimeLog extends BaseElement{
 	static get properties(){
 		return {
@@ -91,6 +89,7 @@ class TimeLog extends BaseElement{
 				html`<flow-btn class="btn block stop-btn warning" @click="${this.onStopClick}">Stop</flow-btn>`:
 				html`<flow-btn class="btn block start-btn primary" @click="${this.onStartClick}">Start</flow-btn>`
 			}
+			<flow-btn class="btn block primary" @click="${this.onLogViewClick}">Show workdiary</flow-btn>
 		</div>
 		<textarea class="log-input" readonly></textarea>
 		`
@@ -386,6 +385,14 @@ class TimeLog extends BaseElement{
 	onStartClick(){
 		this.start()
 	}
+	onLogViewClick(){
+		const {config, team, activity} = this;
+		openWindow('views/logs.html', {}, {
+			config,
+			team,
+			activity
+		})
+	}
 	start(){
 		this.ensureDirs();
 		this.log("uiohook:starting.....", this.msgInput.value)
@@ -439,7 +446,6 @@ class TimeLog extends BaseElement{
 	}
 	_pushLog(activity, data){
 		let file = path.join(HOME, this.team, activity+'-logs.json');
-		console.log("_pushLog:file", file)
 		fs.appendFileSync(file, JSON.stringify(data)+",\n");
 	}
 	queuePush(){
